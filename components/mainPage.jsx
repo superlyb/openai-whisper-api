@@ -18,6 +18,11 @@ import Transcript from './transcript'
 import { useAppStore } from '../stores/appStore'
 import { useAppData } from '../stores/appData'
 
+const constraints =  {
+    audio: true,
+    video: false
+  };
+
 export default function MainPage() {
 
     const dataCount = useAppData((state) => state.count)
@@ -65,7 +70,8 @@ export default function MainPage() {
     const [openModal, setOpenModal] = React.useState(false)
 
     const [isMounted, setMounted] = React.useState(false)
-    
+
+    const [permission, setPermission] = React.useState('');
 
     React.useEffect(() => {
         
@@ -102,7 +108,25 @@ export default function MainPage() {
 
     React.useEffect(() => {
 
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const requestMicrophonePermission = async () => {
+            try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            setPermission('granted');
+            } catch (err) {
+            setPermission('denied');
+            }
+        };
+        const userAgent = navigator.userAgent 
+        if (/android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    requestMicrophonePermission();
+            } else {
+                    setPermission('unsupported');
+            }
+        }
+
+       //alert(navigator.mediaDevices)
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia(constraints)) {
 
             navigator.mediaDevices.getUserMedia({ audio: true }).then(handleStream).catch(handleError)
     

@@ -1,4 +1,4 @@
-import React from 'react'
+import {React,useState,useEffect} from 'react'
 import PropTypes from 'prop-types'
 
 import MicrophoneIcon from './microphone'
@@ -34,6 +34,29 @@ function StartButton({
     onClick = undefined 
 }) {
 
+    const [permission, setPermission] = useState('');
+
+    const requestMicrophonePermission = async () => {
+        try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        setPermission('granted');
+        //navigator.mediaDevices.getUserMedia({ audio: true }).then(handleStream).catch(handleError)
+        } catch (err) {
+        setPermission('denied');
+        }
+    };
+
+    useEffect(() => {
+        const userAgent = navigator.userAgent 
+        if (/android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            requestMicrophonePermission();
+        } else {
+            setPermission('unsupported');
+        }
+        }
+    }, []);
+
     let classContainer = state === startStates.default ? [classes.container, classes.default].join(' ') : [classes.container, classes.activate].join(' ')
     if(disabled) {
         classContainer = [classes.container, classes.disabled].join(' ')
@@ -42,7 +65,8 @@ function StartButton({
     let classIcon = state === startStates.default ? classes.defaultColor : classes.activateColor
 
     return (
-        <div  onClick={disabled ? () => {} : onClick} className={classContainer} >
+        <div  onClick={permission === 'denied' ? requestMicrophonePermission : (disabled ? () => {} : onClick)}>
+            {/* /* onClick={disabled ? () => {} : onClick} className={classContainer} > */ }
             <div className={classes.center}>
                 <div className={classes.icon}>
                     {
