@@ -15,6 +15,6 @@ export const metadata = {
     }
 }
 
-export default function Page({ props }) {
-    return <MainPage {...props} />;
+export default function Page({ }) {
+    return <MainPage />;
 }
