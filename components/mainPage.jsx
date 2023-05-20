@@ -108,23 +108,6 @@ export default function MainPage() {
 
     React.useEffect(() => {
 
-        const requestMicrophonePermission = async () => {
-            try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            setPermission('granted');
-            } catch (err) {
-            setPermission('denied');
-            }
-        };
-        const userAgent = navigator.userAgent 
-        if (/android/i.test(userAgent) || (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream)) {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    requestMicrophonePermission();
-            } else {
-                    setPermission('unsupported');
-            }
-        }
-
        //alert(navigator.mediaDevices)
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia(constraints)) {
 
@@ -348,8 +331,12 @@ export default function MainPage() {
                 body: formData,
                 signal: abortControllerRef.current.signal,
             })
+
+            console.log(response)
     
             if(!response.ok) {
+
+                console.log("xxx",response)
                 
                 /**
                  * I am assuming that all 500 errors will be caused by

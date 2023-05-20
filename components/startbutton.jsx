@@ -40,7 +40,7 @@ function StartButton({
         try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         setPermission('granted');
-        //navigator.mediaDevices.getUserMedia({ audio: true }).then(handleStream).catch(handleError)
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(handleStream).catch(handleError)
         } catch (err) {
         setPermission('denied');
         }
