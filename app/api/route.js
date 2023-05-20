@@ -6,6 +6,15 @@ import FormData from 'form-data'
 
 import { cleanInput } from '../../lib/utils'
 
+import Cors from 'cors'
+
+// Initializing the cors middleware
+const cors = Cors({
+  methods: ['GET', 'HEAD', 'POST'], // Specify the methods you want to enable for this route
+  origin: ['http://localhost:3000', 'https://www.bus-ai.com'], // Specify the sites you want to allow
+})
+
+
 import {
   S3Client,
   ListBucketsCommand,
@@ -44,7 +53,7 @@ async function upLoadfile2cloud(file,filename){
 
 }
 
-export async function POST(req) {
+export async function POST(req,cors) {
 
 
 
