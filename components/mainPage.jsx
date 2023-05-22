@@ -159,11 +159,23 @@ export default function MainPage() {
     const handleStream = (stream) => {
 
         try {
-            
-            mediaRef.current = new MediaRecorder(stream, {
-                audioBitsPerSecond: 128000,
-                mimeType: 'audio/webm;codecs=opus',
-            })
+                
+            if (MediaRecorder.isTypeSupported('audio/webm')) {
+          
+                mediaRef.current = new MediaRecorder(stream, {
+                    audioBitsPerSecond: 128000,
+                    mimeType: 'audio/webm;codecs=opus',
+                })
+
+            }
+            else if(MediaRecorder.isTypeSupported('audio/mp4')){
+                //console.log("MediaRecorder2",MediaRecorder.mimeType);
+                mediaRef.current = new MediaRecorder(stream, {
+                    audioBitsPerSecond: 128000,
+                    mimeType: 'audio/mp4;codecs=mp4a',
+                })
+            }
+            console.log("mime type,",mediaRef.current.mimeType)
 
         } catch(error) {
 
@@ -289,31 +301,49 @@ export default function MainPage() {
     }
 
     const handleStop = () => {
+        //let blob;
+        if (MediaRecorder.isTypeSupported('audio/webm')) {
+          
+            const blob = new Blob(chunksRef.current, {type: 'audio/webm;codecs=opus'})
+            const datetime = recordDateTime.current
+            const name = `file${Date.now()}` + Math.round(Math.random() * 100000)+'.webm'
+            const file = new File([blob], `${name}`)
 
-        const blob = new Blob(chunksRef.current, {type: 'audio/webm;codecs=opus'})
+            chunksRef.current = []
+            
+            setSendCount((prev) => prev + 1)
+
+            sendData(name, datetime, file)
+        }
+        else{
+            const blob = new Blob(chunksRef.current, {type: 'audio/mp4;codecs=mp4a'})
+            const datetime = recordDateTime.current
+            const name = `file${Date.now()}` + Math.round(Math.random() * 100000)+'.mp4'
+            const file = new File([blob], `${name}`)
+
+            chunksRef.current = []
+            
+            setSendCount((prev) => prev + 1)
+            console.log(file.size)
+            sendData(name, datetime, file)
+
+        }
         
-        const datetime = recordDateTime.current
-        const name = `file${Date.now()}` + Math.round(Math.random() * 100000)
-        const file = new File([blob], `${name}.webm`)
-
-        chunksRef.current = []
-        
-        setSendCount((prev) => prev + 1)
-
-        sendData(name, datetime, file)
 
     }
 
     const sendData = async (name, datetime, file) => {
 
+        const extension = name.split('.').pop();
         let options = {
             language: language,
             endpoint: endpoint,
             temperature: temperature,
+            type:extension,
         }
-
+        
         let formData = new FormData()
-        formData.append('file', file, `${name}.webm`)
+        formData.append('file', file, `${name}.`+extension)
         formData.append('name', name)
         formData.append('datetime', datetime)
         formData.append('options', JSON.stringify(options))
@@ -336,7 +366,7 @@ export default function MainPage() {
     
             if(!response.ok) {
 
-                console.log("xxx",response)
+                console.log("xxx",response.text())
                 
                 /**
                  * I am assuming that all 500 errors will be caused by
@@ -349,7 +379,7 @@ export default function MainPage() {
             }
 
             const result = await response.json()
-
+            console.log("result",result)
             setSendCount((prev) => prev - 1)
 
             console.log("[received data]", (new Date()).toLocaleTimeString())

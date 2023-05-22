@@ -53,6 +53,22 @@ async function upLoadfile2cloud(file,filename){
 
 }
 
+/* function getFileType(filename) {
+    // Get the file extension
+    const extension = filename.split('.').pop();
+
+    // Map the file extension to a MIME type
+    const mimeTypes: [extension] = {
+        'webm': 'audio/webm',
+        'mp4': 'audio/mp4',
+        'mp3': 'audio/mpeg',
+        'wav': 'audio/wav',
+        // Add more file types if needed
+    };
+
+    return mimeTypes[extension || ''] || 'Unknown file type';
+} */
+
 export async function POST(req,cors) {
 
 
@@ -63,6 +79,7 @@ export async function POST(req,cors) {
     const name = cleanInput(form.get('name'))
     const datetime = cleanInput(form.get('datetime'))
     const raw_options = cleanInput(form.get('options'))
+   
 
     /**
      * Simple form validation
@@ -74,9 +91,10 @@ export async function POST(req,cors) {
     }
 
     const options = JSON.parse(raw_options)
+    const extension = options.type
 
     const buffer = Buffer.from( await blob.arrayBuffer() )
-    const filename = `${name}.webm`
+    const filename = `${name}.`+extension
     //await bufferToFile(buffer, filename);
   // upLoadfile2cloud(buffer,filename)
     //upload to R2
@@ -181,10 +199,19 @@ export async function POST(req,cors) {
     }
 
     let formData = new FormData()
+    let contentTypes = {
+        'webm':'audio/webm' ,
+        'mp4':'audio/mp4',
+        'mp3':'audio/mpeg',
+        'wav':'audio/wav',
+        // Add more MIME types if needed
+    };
     formData.append('file', buffer, {
         filename: filename, // replace with your file name
-        contentType: 'audio/webm', // replace with the correct mime type for your audio data
+        contentType: contentTypes[extension], // replace with the correct mime type for your audio data
       });
+
+    console.log("contentTypes[extension]",contentTypes[extension])
     //formData.append('file', form)//fs.createReadStream(filepath))
     formData.append('model', 'whisper-1')
     formData.append('response_format', 'vtt') // e.g. text, vtt, srt
