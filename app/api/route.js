@@ -94,7 +94,7 @@ export async function POST(req,cors) {
     const extension = options.type
 
     const buffer = Buffer.from( await blob.arrayBuffer() )
-    const filename = `${name}.`+extension
+    const filename = `${name}`
     //await bufferToFile(buffer, filename);
   // upLoadfile2cloud(buffer,filename)
     //upload to R2

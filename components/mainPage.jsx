@@ -175,7 +175,7 @@ export default function MainPage() {
                     mimeType: 'audio/mp4;codecs=mp4a',
                 })
             }
-            console.log("mime type,",mediaRef.current.mimeType)
+            //console.log("mime type,",mediaRef.current.mimeType)
 
         } catch(error) {
 
@@ -343,7 +343,7 @@ export default function MainPage() {
         }
         
         let formData = new FormData()
-        formData.append('file', file, `${name}.`+extension)
+        formData.append('file', file, `${name}`)
         formData.append('name', name)
         formData.append('datetime', datetime)
         formData.append('options', JSON.stringify(options))
