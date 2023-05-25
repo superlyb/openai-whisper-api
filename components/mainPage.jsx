@@ -17,6 +17,8 @@ import Transcript from './transcript'
 
 import { useAppStore } from '../stores/appStore'
 import { useAppData } from '../stores/appData'
+ 
+import txt2speech from './txt2speech'
 
 const constraints =  {
     audio: true,
@@ -160,7 +162,7 @@ export default function MainPage() {
 
         try {
                 
-            if (MediaRecorder.isTypeSupported('audio/webm')) {
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
           
                 mediaRef.current = new MediaRecorder(stream, {
                     audioBitsPerSecond: 128000,
@@ -168,11 +170,17 @@ export default function MainPage() {
                 })
 
             }
-            else if(MediaRecorder.isTypeSupported('audio/mp4')){
-                //console.log("MediaRecorder2",MediaRecorder.mimeType);
+            else if(MediaRecorder.isTypeSupported('audio/mp4;codecs=aac')){
+                console.log("MediaRecorder2",MediaRecorder.mimeType);
                 mediaRef.current = new MediaRecorder(stream, {
                     audioBitsPerSecond: 128000,
-                    mimeType: 'audio/mp4;codecs=mp4a',
+                    mimeType: 'audio/mp4;codecs=aac',
+                })
+                console.log("MediaRecorder3",MediaRecorder.mimeType);
+            }
+            else{
+                mediaRef.current = new MediaRecorder(stream, {
+                    audioBitsPerSecond: 128000,
                 })
             }
             //console.log("mime type,",mediaRef.current.mimeType)
@@ -316,7 +324,7 @@ export default function MainPage() {
             sendData(name, datetime, file)
         }
         else{
-            const blob = new Blob(chunksRef.current, {type: 'audio/mp4;codecs=mp4a'})
+            const blob = new Blob(chunksRef.current, {type: 'audio/mp4'})
             const datetime = recordDateTime.current
             const name = `file${Date.now()}` + Math.round(Math.random() * 100000)+'.mp4'
             const file = new File([blob], `${name}`)
@@ -362,7 +370,7 @@ export default function MainPage() {
                 signal: abortControllerRef.current.signal,
             })
 
-            console.log(response)
+            //console.log(response)
     
             if(!response.ok) {
 
@@ -379,7 +387,7 @@ export default function MainPage() {
             }
 
             const result = await response.json()
-            console.log("result",result)
+            console.log("result",result.data)
             setSendCount((prev) => prev - 1)
 
             console.log("[received data]", (new Date()).toLocaleTimeString())
@@ -452,9 +460,9 @@ export default function MainPage() {
          * TODO: Play audio data
          */
 
-        setAudioFile(file)
-        setOpenAudioDialog(true)
-
+       // setAudioFile(file)
+       // setOpenAudioDialog(true)
+        txt2speech(file)
     }
 
     const handleCloseSnack = () => {
@@ -512,7 +520,7 @@ export default function MainPage() {
                                 <Transcript
                                 key={item.filename}
                                 {...item}
-                                onClick={() => handleClickTranscript(item.filename)}
+                                onClick={() => handleClickTranscript(item)}
                                 onDelete={handleDelete}
                                 />
                             )

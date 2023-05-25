@@ -1,4 +1,4 @@
-//import fs from 'fs'
+import fs from 'fs'
 import path from 'path'
 import { exec } from 'child_process'
 import axios from 'axios'
@@ -7,6 +7,8 @@ import FormData from 'form-data'
 import { cleanInput } from '../../lib/utils'
 
 import Cors from 'cors'
+
+import {OpenAIApi,Configuration} from 'openai'
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -96,12 +98,12 @@ export async function POST(req,cors) {
     const buffer = Buffer.from( await blob.arrayBuffer() )
     const filename = `${name}`
     //await bufferToFile(buffer, filename);
-  // upLoadfile2cloud(buffer,filename)
+    // upLoadfile2cloud(buffer,filename)
     //upload to R2
 
-   // let filepath = `${path.join('public', 'uploads', filename)}`
+ //  let filepath = `${path.join('public', 'uploads', filename)}`
     
-   // fs.writeFileSync(filepath, buffer)
+ //   fs.writeFileSync(filepath, buffer)
 
     /**
      * We are going to check the file size here to decide
@@ -110,18 +112,18 @@ export async function POST(req,cors) {
      * There is probably a better way to check if the file has no audio data.
      */
 /*     const minFileSize = 18000 // bytes
-   // const stats = fs.statSync(filepath)
+    const stats = fs.statSync(filepath)
 
     if(parseInt(stats.size) < minFileSize) {
 
         return new Response('Bad Request', {
             status: 400,
         })
-    } */
+    }  */
 
     const flagDoNotUseApi = process.env?.DO_NOT_USE_API === 'true'
-/* 
-    if(flagDoNotUseApi) {
+ 
+ /*    if(flagDoNotUseApi) {
         
         const outputDir = path.join('public', 'uploads') 
 
@@ -168,6 +170,7 @@ export async function POST(req,cors) {
          * retval.out format: '[00:01.000 --> 00:02.000]  thank\n' +
          *             '[00:02.720 --> 00:03.720]  you\n' +
          *
+         *
         let sout = []
         let stokens = retval.out.split('\n')
         for(let i = 0; i < stokens.length; i++) {
@@ -190,12 +193,12 @@ export async function POST(req,cors) {
             status: 200,
         })
 
-    }  */
+    }   */
      
     let header = {
         'Content-Type': 'multipart/form-data',
         'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_APIKEY}`
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_APIKEY}`
     }
 
     let formData = new FormData()
@@ -206,13 +209,15 @@ export async function POST(req,cors) {
         'wav':'audio/wav',
         // Add more MIME types if needed
     };
-    formData.append('file', buffer, {
+     formData.append('file', buffer, 
+     {
         filename: filename, // replace with your file name
         contentType: contentTypes[extension], // replace with the correct mime type for your audio data
-      });
-
+      } 
+      );
+ 
     console.log("contentTypes[extension]",contentTypes[extension])
-    //formData.append('file', form)//fs.createReadStream(filepath))
+   // formData.append('file', fs.createReadStream(filepath))
     formData.append('model', 'whisper-1')
     formData.append('response_format', 'vtt') // e.g. text, vtt, srt
 
@@ -229,24 +234,48 @@ export async function POST(req,cors) {
           },
         });
     
-        //console.log(response)
+        //console.log("response"+process.env.NEXT_PUBLIC_OPENAI_APIKEY)
         const data = response.data
 
         /**
          * Sample output
          */
         //const data = "WEBVTT\n\n00:00:00.000 --> 00:00:04.000\nThe party is starting now hurry up, let's go.\n00:00:04.000 --> 00:00:07.000\nHold this one, okay, do not drop it."
-     
-        return new Response(JSON.stringify({ 
+/*          */ 
+/*         const prompttext =response.data
+        const configuration = new Configuration({
+            apiKey: process.env.NEXT_PUBLIC_OPENAI_APIKEY, // replace with your own OpenAI API key
+          });
+          
+        const openai = new OpenAIApi(configuration);
+          
+        const gptResponse = await openai.createCompletion({
+            model:"gpt-3.5-turbo",
+            messages: [
+                {
+                  role: "system",
+                  content: "You are a helpful assistant. if words lost, complete the sentenace ,"
+                },
+                {
+                  role: "user",
+                  content: "今天天气如何"
+                }
+              ],
+   
+        }); */
+
+        //console.log("gptResponse",gptResponse)
+
+        return  new Response(JSON.stringify({ 
             datetime,
             filename,
-            data,
+            data
         }), {
             status: 200,
         })
       } catch (error) {
 
-        console.log(error.response.data)
+        console.log(error)
         return new Response(JSON.stringify({ 
             error: error.message 
         }), {
