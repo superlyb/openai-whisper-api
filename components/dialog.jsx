@@ -7,6 +7,36 @@ import languages from '../assets/language-support.json'
 
 import { useAppStore } from '../stores/appStore'
 
+async function getVoiceList() {
+    try {
+
+        const url = '/api/'
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
+
+        //console.log(response)
+
+        if(!response.ok) {
+
+            console.log("xxx",response.text())
+
+            if(response.status === 500) {
+            }
+
+        }
+
+        console.log("result",response.text())
+        
+
+    } catch(err) {
+        console.log(err)
+    }
+}
+
 export default function Dialog({ onClose = undefined }) {
 
     const language = useAppStore((state) => state.language)
@@ -26,7 +56,9 @@ export default function Dialog({ onClose = undefined }) {
 
     const threshold = useAppStore((state) => state.threshold)
     const setThreshold = useAppStore((state) => state.setThreshold)
+    const selectedVoice = useAppStore((state) => state.threshold)
 
+   // getVoiceList();
     return (
         <div className={classes.container}>
             <div className={classes.dialog}>

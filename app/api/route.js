@@ -283,6 +283,36 @@ export async function POST(req,cors) {
         })
       }
    
+}
 
-
+export async function GET() {
+    try {
+        const subscriptionKey = process.env.NEXT_PUBLIC_TTS_ACCESS_KEY_ID;
+        const serviceRegion = process.env.NEXT_PUBLIC_TTS_REGION;   
+        const endpoint = `https://${serviceRegion}.tts.speech.microsoft.com/cognitiveservices/voices/list`;
+    
+        const response = await axios.get(endpoint, {
+          headers: {
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
+            'Content-Type': 'application/json',
+          },
+        });
+    
+        const voices = response.data;
+        console.log(voices)
+        return new Response(
+            (JSON.stringify({ 
+                voices
+            }), {
+                status: 200,
+            }))
+      } catch (error) {
+        console.error('Failed to fetch voice list:', error);
+        return new Response(
+            JSON.stringify({ 
+                error: 'Failed to fetch voice list'
+            }), {
+                status: 500,
+            })
+      }
 }

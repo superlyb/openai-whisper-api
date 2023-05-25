@@ -72,6 +72,7 @@ export default function MainPage() {
     const [openModal, setOpenModal] = React.useState(false)
 
     const [isMounted, setMounted] = React.useState(false)
+    const played = React.useRef(false)
 
     const [permission, setPermission] = React.useState('');
 
@@ -462,7 +463,9 @@ export default function MainPage() {
 
        // setAudioFile(file)
        // setOpenAudioDialog(true)
-        txt2speech(file)
+        txt2speech(file,played)
+        played.current = false
+        
     }
 
     const handleCloseSnack = () => {
