@@ -73,7 +73,7 @@ async function upLoadfile2cloud(file,filename){
 */
  export async function POST(req,cors) {
 
-
+    
 
     const form = await req.formData()
     
@@ -90,6 +90,7 @@ async function upLoadfile2cloud(file,filename){
     }
 
     const options = JSON.parse(raw_options)
+    console.log('options',options)
     const extension = options.type
 
     const buffer = Buffer.from( await blob.arrayBuffer() )
@@ -118,13 +119,23 @@ async function upLoadfile2cloud(file,filename){
       } 
       );
  
-    console.log("contentTypes[extension]",contentTypes[extension])
+   // console.log("contentTypes[extension]",contentTypes[extension])
    // formData.append('file', fs.createReadStream(filepath))
     formData.append('model', 'whisper-1')
-    formData.append('response_format', 'vtt') // e.g. text, vtt, srt
+    formData.append('response_format', options.format) // e.g. text, vtt, srt
 
     formData.append('temperature', options.temperature)
-    formData.append('language', options.language)
+    if (!options.language){
+        formData.append('language', options.language)
+    }
+    else{
+        formData.append('language', 'zh')
+    }
+
+    console.log(formData)
+    
+
+ //   console.log("lang",options.language)
 
     const url = options.endpoint === 'transcriptions' ? 'https://api.openai.com/v1/audio/transcriptions' : 'https://api.openai.com/v1/audio/translations'
     
@@ -135,37 +146,44 @@ async function upLoadfile2cloud(file,filename){
             ...header,
           },
         });
-    
+        
         //console.log("response"+process.env.NEXT_PUBLIC_OPENAI_APIKEY)
         const data = response.data
-
         const origin = req.headers.origin;
         // Return CORS headers for preflight request
-
+       //console.log("xxx",data)
         
-        const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
-
-         const res = new Response(JSON.stringify({ 
-            datetime,
-            filename,
-            data
-        }), {
-            status: 200,
+        //const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
+        const allowedOrigins = ['http://localhost:3000'];
+        //        if (options.format === 'text'){
+        const res = new Response(JSON.stringify({ 
+                data
+         }), {
+                status: 200,
         })
+        res.headers.set('Access-Control-Allow-Origin', '*');
+        res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+        res.headers.set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
 
-// If the origin of the request is in our list of allowed origins, set the Access-Control-Allow-Origin header to that origin
-        console.log("gptResponse",origin)
-        if (allowedOrigins.includes(origin)) {
-            res.headers.set('Access-Control-Allow-Origin', origin);
-        }
-        res.headers.set('Access-Control-Allow-Methods', 'POST'); // Include other methods if needed
-        res.headers.set('Access-Control-Allow-Headers', 'Content-Type')
         return  res
+/*         }
+        else{
+            const res = new Response(JSON.stringify({
+                datetime,
+                filename, 
+                data
+            }), {
+                status: 200,
+            })
+            return  res
+        } */
+         
       } catch (error) {
 
-        console.log(error)
+        console.log(error.response)
+        
         return new Response(JSON.stringify({ 
-            error: error.message 
+            error: error 
         }), {
             status: 500,
         })
@@ -211,15 +229,13 @@ export async function OPTIONS(req) {
         // Return CORS headers for preflight request
 
         
-        const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
+        const allowedOrigins = ['http'];
         const res = new Response({
             status: 200,
         })
-        if (allowedOrigins.includes(origin)) {
-            res.headers.set('Access-Control-Allow-Origin', origin);
-          }
-          res.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-          res.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+          res.headers.set('Access-Control-Allow-Origin', '*');
+          res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+          res.headers.set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
           return;
       } catch (error) {
         console.error('Failed to fetch voice list:', error);

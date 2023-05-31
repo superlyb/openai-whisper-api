@@ -22,7 +22,7 @@ async function getVoiceList() {
 
         if(!response.ok) {
 
-            console.log("xxx",response.text())
+            //console.log("xxx",response.text())
 
             if(response.status === 500) {
             }

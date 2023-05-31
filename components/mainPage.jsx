@@ -349,6 +349,7 @@ export default function MainPage() {
             endpoint: endpoint,
             temperature: temperature,
             type:extension,
+            format:'vtt',
         }
         
         let formData = new FormData()
@@ -357,7 +358,7 @@ export default function MainPage() {
         formData.append('datetime', datetime)
         formData.append('options', JSON.stringify(options))
 
-        console.log("[send data]", (new Date()).toLocaleTimeString())
+        console.log("[send data]", options,`${name}`)
 
         try {
 
@@ -375,7 +376,7 @@ export default function MainPage() {
     
             if(!response.ok) {
 
-                console.log("xxx",response.text())
+                //console.log("xxx",response.text())
                 
                 /**
                  * I am assuming that all 500 errors will be caused by
