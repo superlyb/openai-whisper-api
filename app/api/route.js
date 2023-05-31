@@ -328,3 +328,30 @@ export async function GET() {
             })
       }
 }
+export async function OPTIONS(req) {
+    try {
+        const origin = req.headers.origin;
+        // Return CORS headers for preflight request
+
+        
+        const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
+        const res = new Response({
+            status: 200,
+        })
+        if (allowedOrigins.includes(origin)) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+          }
+          res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+          res.status(200).end();
+          return;
+      } catch (error) {
+        console.error('Failed to fetch voice list:', error);
+        return new Response(
+            JSON.stringify({ 
+                error: 'Failed to fetch voice list'
+            }), {
+                status: 500,
+            })
+      }
+}
