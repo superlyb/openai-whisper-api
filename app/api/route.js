@@ -348,7 +348,7 @@ export async function OPTIONS(req) {
         console.error('Failed to fetch voice list:', error);
         return new Response(
             JSON.stringify({ 
-                error: 'Failed to fetch voice list'
+                error: error
             }), {
                 status: 500,
             })
