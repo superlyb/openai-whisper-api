@@ -263,8 +263,10 @@ export async function POST(req,cors) {
               ],
    
         }); */
+        const origin = req.headers.origin;
+        // Return CORS headers for preflight request
 
-        //console.log("gptResponse",gptResponse)
+        
         const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
 
          const res = new Response(JSON.stringify({ 
@@ -274,9 +276,9 @@ export async function POST(req,cors) {
         }), {
             status: 200,
         })
-        const origin = req.headers.get('Origin');
 
 // If the origin of the request is in our list of allowed origins, set the Access-Control-Allow-Origin header to that origin
+        console.log("gptResponse",origin)
         if (allowedOrigins.includes(origin)) {
             res.headers.set('Access-Control-Allow-Origin', origin);
         }
