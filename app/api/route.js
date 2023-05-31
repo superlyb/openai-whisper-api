@@ -339,10 +339,10 @@ export async function OPTIONS(req) {
             status: 200,
         })
         if (allowedOrigins.includes(origin)) {
-            res.setHeader('Access-Control-Allow-Origin', origin);
+            res.headers.set('Access-Control-Allow-Origin', origin);
           }
-          res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-          res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+          res.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+          res.headers.set('Access-Control-Allow-Headers', 'Content-Type');
           res.status(200).end();
           return;
       } catch (error) {
