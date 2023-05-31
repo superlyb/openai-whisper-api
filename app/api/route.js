@@ -90,7 +90,7 @@ async function upLoadfile2cloud(file,filename){
     }
 
     const options = JSON.parse(raw_options)
-    console.log('options',options)
+    //console.log('options',options)
     const extension = options.type
 
     const buffer = Buffer.from( await blob.arrayBuffer() )
@@ -149,24 +149,23 @@ async function upLoadfile2cloud(file,filename){
         
         //console.log("response"+process.env.NEXT_PUBLIC_OPENAI_APIKEY)
         const data = response.data
-        const origin = req.headers.origin;
         // Return CORS headers for preflight request
-       //console.log("xxx",data)
         
         //const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
-        const allowedOrigins = ['http://localhost:3000'];
-        //        if (options.format === 'text'){
-        const res = new Response(JSON.stringify({ 
-                data
-         }), {
-                status: 200,
-        })
-        res.headers.set('Access-Control-Allow-Origin', '*');
-        res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
-        res.headers.set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+        if (options.format === 'text'){
+            const resheaders = new Headers();
+            resheaders.set('Access-Control-Allow-Origin', '*');
+            resheaders.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+            resheaders.set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
+            const res = new Response(JSON.stringify({ 
+                    data
+            }), {
+                    status: 200,
+                    headers:resheaders
+            })
 
-        return  res
-/*         }
+            return  res
+        }
         else{
             const res = new Response(JSON.stringify({
                 datetime,
@@ -176,7 +175,7 @@ async function upLoadfile2cloud(file,filename){
                 status: 200,
             })
             return  res
-        } */
+        } 
          
       } catch (error) {
 
@@ -205,7 +204,7 @@ export async function GET() {
         });
     
         const voices = response.data;
-        console.log(voices)
+       // console.log(voices)
         return new Response(
             (JSON.stringify({ 
                 voices
@@ -224,19 +223,13 @@ export async function GET() {
 }
 export async function OPTIONS(req) {
     try {
-        //console.log("re2q",req)
-        const origin = req.headers.origin;
-        // Return CORS headers for preflight request
-
-        
-        const allowedOrigins = ['http'];
         const res = new Response({
             status: 200,
         })
           res.headers.set('Access-Control-Allow-Origin', '*');
           res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
           res.headers.set('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token');
-          return;
+          return res;
       } catch (error) {
         console.error('Failed to fetch voice list:', error);
         return new Response(
