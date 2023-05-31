@@ -343,7 +343,6 @@ export async function OPTIONS(req) {
           }
           res.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
           res.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-          res.status(200).end();
           return;
       } catch (error) {
         console.error('Failed to fetch voice list:', error);
