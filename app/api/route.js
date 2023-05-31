@@ -265,6 +265,8 @@ export async function POST(req,cors) {
         }); */
 
         //console.log("gptResponse",gptResponse)
+        const allowedOrigins = ['http://localhost:3000', 'https://www.bus-ai.com'];
+
          const res = new Response(JSON.stringify({ 
             datetime,
             filename,
@@ -272,7 +274,12 @@ export async function POST(req,cors) {
         }), {
             status: 200,
         })
-        res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3000,https://www.bus-ai.com')
+        const origin = req.headers.get('Origin');
+
+// If the origin of the request is in our list of allowed origins, set the Access-Control-Allow-Origin header to that origin
+        if (allowedOrigins.includes(origin)) {
+            res.headers.set('Access-Control-Allow-Origin', origin);
+        }
         return  res
       } catch (error) {
 
