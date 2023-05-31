@@ -265,7 +265,7 @@ export async function POST(req,cors) {
         }); */
 
         //console.log("gptResponse",gptResponse)
-        const allowedOrigins = ['http://localhost:3000'];
+        const allowedOrigins = ['https://chat-gpt-next-web-avre.vercel.app'];
 
          const res = new Response(JSON.stringify({ 
             datetime,
