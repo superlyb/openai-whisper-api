@@ -265,14 +265,15 @@ export async function POST(req,cors) {
         }); */
 
         //console.log("gptResponse",gptResponse)
-
-        return  new Response(JSON.stringify({ 
+         const res = new Response(JSON.stringify({ 
             datetime,
             filename,
             data
         }), {
             status: 200,
         })
+        res.headers.set('Access-Control-Allow-Origin', 'http://localhost:3000,https://www.bus-ai.com')
+        return  res
       } catch (error) {
 
         console.log(error)
