@@ -265,7 +265,7 @@ export async function POST(req,cors) {
         }); */
 
         //console.log("gptResponse",gptResponse)
-        const allowedOrigins = ['http://localhost:3000', 'https://www.bus-ai.com'];
+        const allowedOrigins = ['http://localhost:3000'];
 
          const res = new Response(JSON.stringify({ 
             datetime,
@@ -280,6 +280,8 @@ export async function POST(req,cors) {
         if (allowedOrigins.includes(origin)) {
             res.headers.set('Access-Control-Allow-Origin', origin);
         }
+        res.headers.set('Access-Control-Allow-Methods', 'POST'); // Include other methods if needed
+        res.headers.set('Access-Control-Allow-Headers', 'Content-Type')
         return  res
       } catch (error) {
 
